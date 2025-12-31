@@ -1,0 +1,27 @@
+{
+	"关闭": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "通用/关闭X.png"
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
+	},
+	"跳过": {
+		"post_delay": 5000,
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "通用/跳过.png"
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
+	}
+}

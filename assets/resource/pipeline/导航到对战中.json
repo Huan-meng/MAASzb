@@ -1,5 +1,6 @@
 {
 	"启动影之诗": {
+		"on_error": ["启动影之诗"],
 		"action": {
 			"type": "StartApp",
 			"param": {
@@ -19,34 +20,46 @@
 		"action": {
 			"type": "Click",
 			"param": {
-				"target_offset": [200, 200, 100, 100]
+				"target_offset": [500, -200, 200, 200]
 			}
-		},
-		"next": "从主界面导航到换牌"
+		}
 	},
-	"从主界面导航到换牌": {
-		"on_error": "点击登录页",
-		"next": ["点击对战菜单", "点击随机对战", "点击对战按钮", "换牌决定", "关闭广告"]
-	},
-	"关闭广告": {
+	"点击确认窗口": {
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
-				"template": "关闭X.png"
+				"template": "是.png",
+				"threshold": 0.8
 			}
 		},
 		"action": {
 			"type": "Click",
 			"param": {}
-		},
-		"next": ["点击对战菜单"]
+		}
+	},
+	"判断状态": {
+		"next": [
+			"[JumpBack]点击确认窗口",
+			"[JumpBack]点击登录页",
+			"[JumpBack]点击对战菜单",
+			"[JumpBack]点击随机对战",
+			"[JumpBack]点击对战按钮",
+			"[JumpBack]换牌决定",
+			"[JumpBack]关闭广告",
+			"[JumpBack]抽取每日免费卡包",
+			"[JumpBack]识别我方回合",
+			"[JumpBack]识别对手回合"
+		]
+	},
+	"关闭广告": {
+		"next": ["[JumpBack]关闭"]
 	},
 	"点击对战菜单": {
-		"on_error": "从主界面导航到换牌",
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
-				"template": ["金币.png", "水晶.png"]
+				"template": ["金币.png", "水晶.png"],
+				"threshold": 0.8
 			}
 		},
 		"action": {
@@ -59,7 +72,6 @@
 	},
 	"点击随机对战": {
 		"timeout": 5000,
-		"on_error": "从主界面导航到换牌",
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
@@ -73,7 +85,6 @@
 		"next": ["点击对战按钮"]
 	},
 	"点击对战按钮": {
-		"on_error": "从主界面导航到换牌",
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
@@ -87,7 +98,6 @@
 		"next": ["换牌准备"]
 	},
 	"换牌准备": {
-		"on_error": "从主界面导航到换牌",
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
