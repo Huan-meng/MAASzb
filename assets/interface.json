@@ -83,13 +83,7 @@
 					"description": "是",
 					"pipeline_override": {
 						"抽取每日免费卡包": {
-							"action": {
-								"type": "Click",
-								"param": {
-									"target_offset": [0, 300, 0, 0]
-								}
-							},
-							"next": ["登录奖励免费购买"]
+							"next": ["立刻前往"]
 						}
 					}
 				},

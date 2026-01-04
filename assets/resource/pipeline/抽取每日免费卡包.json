@@ -8,6 +8,19 @@
 			}
 		}
 	},
+	"立刻前往": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "每日卡包/立刻前往.png"
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		},
+		"next": ["登录奖励免费购买"]
+	},
 	"登录奖励免费购买": {
 		"recognition": {
 			"type": "TemplateMatch",
@@ -22,6 +35,7 @@
 		"next": ["免费购买"]
 	},
 	"免费购买": {
+		"timeout": 5000,
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {

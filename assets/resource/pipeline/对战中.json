@@ -1,18 +1,32 @@
 {
-    "识别我方回合": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": "对战/我方回合.png"
-            }
-        }
-    },
-    "识别对手回合": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": "对战/对手回合.png"
-            }
-        }
-    }
+	"识别我方回合": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/我方回合.png"
+			}
+		}
+		//"next": ["点击能量点"]
+	},
+	"点击能量点": {
+		"post_wait_freezes": 2000,
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/能量点.png"
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
+	},
+	"识别对手回合": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/对手回合.png"
+			}
+		}
+	}
 }

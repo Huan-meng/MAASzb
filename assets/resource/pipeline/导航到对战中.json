@@ -10,7 +10,7 @@
 		]
 	},
 	"点击对战菜单": {
-		"post_wait_freezes": 2000,
+		"max_hit": 1,
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
@@ -26,7 +26,7 @@
 		}
 	},
 	"点击随机对战": {
-		"timeout": 5000,
+		"max_hit": 1,
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
