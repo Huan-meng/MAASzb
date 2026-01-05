@@ -1,6 +1,5 @@
 {
 	"抽取每日免费卡包": {
-		"post_delay": 5000,
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {

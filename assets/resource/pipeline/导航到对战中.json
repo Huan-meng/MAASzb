@@ -42,7 +42,8 @@
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
-				"template": "对战/对战.png"
+				"template": "对战/对战.png",
+				"threshold": 0.8
 			}
 		},
 		"action": {

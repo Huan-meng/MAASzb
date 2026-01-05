@@ -5,20 +5,228 @@
 			"param": {
 				"template": "对战/我方回合.png"
 			}
-		}
-		//"next": ["点击能量点"]
+		},
+		"next": ["识别没有+1费"]
 	},
-	"点击能量点": {
-		"post_wait_freezes": 2000,
+	"识别没有+1费": {
+		"timeout": 2000,
+		"inverse": true,
 		"recognition": {
 			"type": "TemplateMatch",
 			"param": {
-				"template": "对战/能量点.png"
+				"template": "对战/+1费.png"
+			}
+		},
+		"next": ["点击能量点", "出牌准备"]
+	},
+	"点击能量点": {
+		"timeout": 2000,
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/能量点.png",
+				"threshold": 0.8
 			}
 		},
 		"action": {
 			"type": "Click",
 			"param": {}
+		},
+		"next": ["出牌准备"]
+	},
+	"出牌准备": {
+		"action": {
+			"type": "Click",
+			"param": {
+				"target": [936, 616, 47, 103]
+			}
+		},
+		"next": ["出牌"]
+	},
+	"出牌": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [640, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 1000,
+						"begin": [540, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 2000,
+						"begin": [740, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 3000,
+						"begin": [440, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 4000,
+						"begin": [840, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 5000,
+						"begin": [340, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 6000,
+						"begin": [940, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 7000,
+						"begin": [240, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					},
+					{
+						"starting": 8000,
+						"begin": [1040, 600, 80, 120],
+						"end": [333, 324, 623, 141]
+					}
+				]
+			}
+		},
+		"next": ["进化"]
+	},
+	"进化": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [540, 492, 44, 54],
+						"end": [286, 360, 100, 100]
+					},
+					{
+						"starting": 500,
+						"begin": [540, 492, 44, 54],
+						"end": [372, 340, 100, 100]
+					},
+					{
+						"starting": 1000,
+						"begin": [540, 492, 44, 54],
+						"end": [435, 360, 100, 100]
+					},
+					{
+						"starting": 1500,
+						"begin": [540, 492, 44, 54],
+						"end": [515, 360, 100, 100]
+					},
+					{
+						"starting": 2000,
+						"begin": [540, 492, 44, 54],
+						"end": [591, 360, 100, 100]
+					},
+					{
+						"starting": 2500,
+						"begin": [540, 492, 44, 54],
+						"end": [670, 360, 100, 100]
+					},
+					{
+						"starting": 3000,
+						"begin": [540, 492, 44, 54],
+						"end": [742, 360, 100, 100]
+					},
+					{
+						"starting": 3500,
+						"begin": [540, 492, 44, 54],
+						"end": [820, 360, 100, 100]
+					},
+					{
+						"starting": 4000,
+						"begin": [540, 492, 44, 54],
+						"end": [893, 360, 100, 100]
+					}
+				]
+			}
+		},
+		"next": ["超进化"]
+	},
+	"超进化": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [700, 496, 36, 42],
+						"end": [286, 360, 100, 100]
+					},
+					{
+						"starting": 500,
+						"begin": [700, 496, 36, 42],
+						"end": [372, 340, 100, 100]
+					},
+					{
+						"starting": 1000,
+						"begin": [700, 496, 36, 42],
+						"end": [435, 360, 100, 100]
+					},
+					{
+						"starting": 1500,
+						"begin": [700, 496, 36, 42],
+						"end": [515, 360, 100, 100]
+					},
+					{
+						"starting": 2000,
+						"begin": [700, 496, 36, 42],
+						"end": [591, 360, 100, 100]
+					},
+					{
+						"starting": 2500,
+						"begin": [700, 496, 36, 42],
+						"end": [670, 360, 100, 100]
+					},
+					{
+						"starting": 3000,
+						"begin": [700, 496, 36, 42],
+						"end": [742, 360, 100, 100]
+					},
+					{
+						"starting": 3500,
+						"begin": [700, 496, 36, 42],
+						"end": [820, 360, 100, 100]
+					},
+					{
+						"starting": 4000,
+						"begin": [700, 496, 36, 42],
+						"end": [893, 360, 100, 100]
+					}
+				]
+			}
+		}
+	},
+	"获取我方攻击生命": {
+		"recognition": {
+			"type": "Custom",
+			"param": {
+				"custom_recognition": "ColorOCRWithFallback",
+				"custom_recognition_param": {
+					"target_color": [102, 239, 11],
+					"tolerance": 95,
+					"recognition": "获取我方攻击生命_OCR"
+				}
+			}
+		}
+	},
+	"获取我方攻击生命_OCR": {
+		"recognition": {
+			"type": "OCR",
+			"param": {
+				"roi": [211, 216, 577, 362],
+				"expected": "[1-9]|10"
+			}
 		}
 	},
 	"识别对手回合": {

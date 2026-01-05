@@ -3,11 +3,10 @@ import sys
 from maa.agent.agent_server import AgentServer
 from maa.toolkit import Toolkit
 
-import my_action
-import my_reco
-
-
 def main():
+
+    import custom
+
     Toolkit.init_option("./")
 
     if len(sys.argv) < 2:
