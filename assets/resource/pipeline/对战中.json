@@ -213,8 +213,8 @@
 			"param": {
 				"custom_recognition": "ColorOCRWithFallback",
 				"custom_recognition_param": {
-					"target_color": [102, 239, 11],
-					"tolerance": 95,
+					"target_color": [0, 255, 0],
+					"tolerance": 120,
 					"recognition": "获取我方攻击生命_OCR"
 				}
 			}
