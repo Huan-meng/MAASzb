@@ -18,14 +18,14 @@ class ColorOCR(CustomRecognition):
 
     参数格式:
     {
-        "target_color": [R, G, B],
-        "tolerance": int,
+        "target_color": [R, G, B] 或 [[R1, G1, B1], [R2, G2, B2], ...],
+        "tolerance": int 或 [int1, int2, ...],
         "recognition": string
     }
 
     字段说明:
-    - target_color: 目标颜色RGB值，默认 [255, 255, 255] (白色)
-    - tolerance: 颜色容差，默认55
+    - target_color: 目标颜色RGB值，单个颜色或多个颜色列表，默认 [255, 255, 255] (白色)
+    - tolerance: 颜色容差，单个值或与颜色列表对应的容差列表，默认55
     - recognition: 要运行的OCR识别节点名称
     """
 
@@ -42,32 +42,73 @@ class ColorOCR(CustomRecognition):
             tolerance = params.get("tolerance", 55)
             recognition_node = params.get("recognition")
 
-            if not target_color or len(target_color) != 3:
-                logger.error(f"无效的target_color参数: {target_color}")
-                return None
-
+            # 检查recognition参数
             if not recognition_node:
                 logger.error("未提供recognition参数")
                 return None
 
+            # 处理目标颜色参数
+            target_colors = []
+            tolerances = []
+
+            # 检查target_color是否为单个颜色（长度为3的列表）
+            if isinstance(target_color, list) and len(target_color) == 3 and all(isinstance(c, (int, float)) for c in target_color):
+                target_colors = [target_color]
+                # 处理容差参数
+                if isinstance(tolerance, (int, float)):
+                    tolerances = [tolerance]
+                else:
+                    logger.error(f"无效的tolerance参数: {tolerance}")
+                    return None
+            # 检查target_color是否为多个颜色的列表
+            elif isinstance(target_color, list) and all(isinstance(c, list) and len(c) == 3 for c in target_color):
+                target_colors = target_color
+                # 处理容差参数
+                if isinstance(tolerance, (int, float)):
+                    # 单个容差应用于所有颜色
+                    tolerances = [tolerance] * len(target_colors)
+                elif isinstance(tolerance, list) and len(tolerance) == len(target_colors):
+                    # 每个颜色对应一个容差
+                    tolerances = tolerance
+                else:
+                    logger.error(f"无效的tolerance参数: {tolerance}")
+                    return None
+            else:
+                logger.error(f"无效的target_color参数: {target_color}")
+                return None
+
+            # 检查所有颜色值是否有效
+            for color in target_colors:
+                if not all(0 <= c <= 255 for c in color):
+                    logger.error(f"无效的颜色值: {color}")
+                    return None
+
             # 获取图像
             img = argv.image
 
-            # 定义目标颜色和颜色容差
-            target_color_array = np.array(target_color)
+            # 创建综合颜色过滤掩码
+            combined_mask = np.zeros(img.shape[:2], dtype=bool)
 
-            # 创建颜色过滤掩码
-            lower_bound = np.maximum(target_color_array - tolerance, 0)
-            upper_bound = np.minimum(target_color_array + tolerance, 255)
+            # 处理每个目标颜色
+            for i, (color, tol) in enumerate(zip(target_colors, tolerances)):
+                # 定义目标颜色和颜色容差
+                target_color_array = np.array(color)
 
-            # 创建掩码：保留在目标颜色范围内的像素
-            color_mask = np.all((img >= lower_bound) & (img <= upper_bound), axis=-1)
+                # 创建颜色过滤掩码
+                lower_bound = np.maximum(target_color_array - tol, 0)
+                upper_bound = np.minimum(target_color_array + tol, 255)
+
+                # 创建掩码：保留在目标颜色范围内的像素
+                color_mask = np.all((img >= lower_bound) & (img <= upper_bound), axis=-1)
+
+                # 合并到综合掩码
+                combined_mask |= color_mask
 
             # 处理图像：目标颜色变成黑色，其他颜色变成白色
             # 创建一个全白图像
             processed_img = np.full_like(img, 255, dtype=np.uint8)
             # 将匹配目标颜色的像素设置为黑色
-            processed_img[color_mask] = 0
+            processed_img[combined_mask] = 0
 
             # 在处理后的图像上运行OCR识别
             reco_detail = context.run_recognition(recognition_node, processed_img)

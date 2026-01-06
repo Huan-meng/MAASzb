@@ -211,10 +211,15 @@
 		"recognition": {
 			"type": "Custom",
 			"param": {
-				"custom_recognition": "ColorOCRWithFallback",
+				"custom_recognition": "ColorOCR",
 				"custom_recognition_param": {
-					"target_color": [0, 255, 0],
-					"tolerance": 120,
+					"target_color": [
+						[106, 235, 11],
+						[255, 255, 255],
+						[163, 255, 43],
+						[171, 24, 23]
+					],
+					"tolerance": [120, 75, 120, 50],
 					"recognition": "获取我方攻击生命_OCR"
 				}
 			}
