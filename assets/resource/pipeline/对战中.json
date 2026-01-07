@@ -207,30 +207,43 @@
 			}
 		}
 	},
-	"获取我方攻击生命": {
+	"识别双方随从攻击生命": {
 		"recognition": {
 			"type": "Custom",
 			"param": {
-				"custom_recognition": "ColorOCR",
-				"custom_recognition_param": {
-					"target_color": [
-						[106, 235, 11],
-						[255, 255, 255],
-						[163, 255, 43],
-						[171, 24, 23]
-					],
-					"tolerance": [120, 75, 120, 50],
-					"recognition": "获取我方攻击生命_OCR"
-				}
+				"custom_recognition": "RecognitionResultsArray",
+				"custom_recognition_param": {"recognition": "识别双方随从攻击生命_node"}
 			}
 		}
 	},
-	"获取我方攻击生命_OCR": {
+
+	"识别双方随从攻击生命_node": {
 		"recognition": {
-			"type": "OCR",
+			"type": "And",
 			"param": {
-				"roi": [211, 216, 577, 362],
-				"expected": "[1-9]|10"
+				"all_of": [
+					{
+						"sub_name": "识别攻击力和生命位置",
+						"recognition": {
+							"type": "TemplateMatch",
+							"param": {
+								"template": ["对战/攻击力.png", "对战/生命.png"],
+								"green_mask": true,
+								"threshold": 0.3
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "识别攻击力和生命位置",
+								"roi_offset": [10, 10, -20, -20],
+								"only_rec": true
+							}
+						}
+					}
+				]
 			}
 		}
 	},
