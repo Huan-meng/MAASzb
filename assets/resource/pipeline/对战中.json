@@ -207,17 +207,20 @@
 			}
 		}
 	},
-	"识别双方随从攻击生命": {
+
+	"颜色匹配": {
 		"recognition": {
-			"type": "Custom",
+			"type": "ColorMatch",
 			"param": {
-				"custom_recognition": "RecognitionResultsArray",
-				"custom_recognition_param": {"recognition": "识别双方随从攻击生命_node"}
+				"roi": [138, 151, 929, 337],
+				"upper": [200, 67, 66],
+				"lower": [132, 65, 63],
+				"count": 300,
+				"connected": true
 			}
 		}
 	},
-
-	"识别双方随从攻击生命_node": {
+	"识别双方随从攻击生命": {
 		"recognition": {
 			"type": "And",
 			"param": {
@@ -244,6 +247,27 @@
 						}
 					}
 				]
+			}
+		},
+		"action": {
+			"type": "Custom",
+			"param": {"custom_action": "GenerateAttackPlan"}
+		}
+	},
+	"随从交换": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [{}]
+			}
+		}
+	},
+	"识别对手主战血量": {
+		"recognition": {
+			"type": "OCR",
+			"param": {
+				"roi": [700, 0, 100, 100],
+				"expected": "[0-9]*"
 			}
 		}
 	},

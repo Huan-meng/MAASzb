@@ -33,7 +33,6 @@
 			"path": ["./resource", "./resource_global"]
 		}
 	],
-	// 可选的 agent 示例
 	"agent": {
 		"child_exec": "python",
 		"child_args": ["-u", "./../agent/main.py"]
@@ -48,7 +47,7 @@
 			"name": "开始挂机对战",
 			"entry": "导航到对战",
 			"option": ["换牌策略"]
-		},
+		}
 	],
 	"option": {
 		"换牌策略": {
