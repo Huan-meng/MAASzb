@@ -205,22 +205,11 @@
 					}
 				]
 			}
-		}
+		},
+		"post_wait_freezes": 5000,
+		"next": ["进行攻击"]
 	},
-
-	"颜色匹配": {
-		"recognition": {
-			"type": "ColorMatch",
-			"param": {
-				"roi": [138, 151, 929, 337],
-				"upper": [200, 67, 66],
-				"lower": [132, 65, 63],
-				"count": 300,
-				"connected": true
-			}
-		}
-	},
-	"识别双方随从攻击生命": {
+	"进行攻击": {
 		"recognition": {
 			"type": "And",
 			"param": {
@@ -252,6 +241,18 @@
 		"action": {
 			"type": "Custom",
 			"param": {"custom_action": "GenerateAttackPlan"}
+		},
+		"next": ["结束回合"]
+	},
+	"结束回合": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/结束回合.png"
+			}
+		},
+		"action": {
+			"type": "Click"
 		}
 	},
 	"随从交换": {

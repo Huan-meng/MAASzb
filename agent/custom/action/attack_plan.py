@@ -4,7 +4,7 @@ from maa.agent.agent_server import AgentServer
 from utils import RecoDetail
 from utils import logger
 from typing import List, Tuple, Dict, Any
-
+import json
 
 @AgentServer.custom_action("GenerateAttackPlan")
 class GenerateAttackPlan(CustomAction):
@@ -44,7 +44,7 @@ class GenerateAttackPlan(CustomAction):
             return CustomAction.RunResult(success=False)
 
         # 获取敌方主战者生命值
-        enemy_leader_hp = self._get_enemy_leader_hp(argv.reco_detail)
+        enemy_leader_hp = self.get_enemy_leader_hp(context)
 
         # 生成攻击方案
         swipes = AttackPlanGenerator.generate_attack_plan(
@@ -77,23 +77,18 @@ class GenerateAttackPlan(CustomAction):
 
         return CustomAction.RunResult(success=True)
 
-    def _get_enemy_leader_hp(self, reco_detail) -> int:
+    def get_enemy_leader_hp(self, context: Context) -> int:
         """
         获取敌方主战者生命值
         """
         enemy_leader_hp = 0
         try:
-            # 尝试从识别结果中获取敌方主战者生命值
-            # 假设 argv.reco_detail 中有 "识别对手主战血量" 的结果
-            if hasattr(reco_detail, "识别对手主战血量"):
-                leader_hp_result = getattr(reco_detail, "识别对手主战血量")
-                if hasattr(leader_hp_result, "text"):
-                    enemy_leader_hp = int(leader_hp_result.text)
-                    logger.info(f"敌方主战者生命值: {enemy_leader_hp}")
-                elif hasattr(leader_hp_result, "best_result"):
-                    if hasattr(leader_hp_result.best_result, "text"):
-                        enemy_leader_hp = int(leader_hp_result.best_result.text)
-                        logger.info(f"敌方主战者生命值: {enemy_leader_hp}")
+            reco_detail = context.run_recognition(
+                "识别对手主战血量", context.tasker.controller.cached_image
+            )
+            reco_dict = RecoDetail.reco_detail_to_dict(reco_detail)
+            enemy_leader_hp = int(reco_dict["best_result"]["text"])
+            logger.info(f"敌方主战者生命值: {enemy_leader_hp}")
         except Exception as e:
             logger.warning(f"获取敌方主战者生命值时出错: {e}")
         return enemy_leader_hp
