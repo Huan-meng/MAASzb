@@ -145,7 +145,7 @@ class AttackPlanGenerator:
     攻击方案生成器
     """
 
-    ENEMY_LEADER_POSITION = [555, 4, 159, 80]
+    ENEMY_LEADER_POSITION = [572,1,136,92]
 
     @staticmethod
     def generate_attack_plan(
