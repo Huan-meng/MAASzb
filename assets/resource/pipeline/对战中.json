@@ -17,7 +17,7 @@
 				"template": "对战/+1费.png"
 			}
 		},
-		"next": ["点击能量点", "出牌准备"]
+		"next": ["点击能量点", "出牌_1"]
 	},
 	"点击能量点": {
 		"timeout": 2000,
@@ -32,66 +32,254 @@
 			"type": "Click",
 			"param": {}
 		},
-		"next": ["出牌准备"]
+		"next": ["出牌_1"]
 	},
-	"出牌准备": {
-		"action": {
-			"type": "Click",
-			"param": {
-				"target": [936, 616, 47, 103]
-			}
-		},
-		"next": ["出牌"]
-	},
-	"出牌": {
+	"出牌_1": {
 		"action": {
 			"type": "MultiSwipe",
 			"param": {
 				"swipes": [
 					{
 						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [640, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 1000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_2"]
+	},
+	"出牌_2": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [540, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 2000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_3"]
+	},
+	"出牌_3": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [740, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 3000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_4"]
+	},
+	"出牌_4": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [440, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 4000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_5"]
+	},
+	"出牌_5": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [840, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 5000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_6"]
+	},
+	"出牌_6": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [340, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 6000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_7"]
+	},
+	"出牌_7": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [940, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 7000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_8"]
+	},
+	"出牌_8": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [240, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
 					},
 					{
-						"starting": 8000,
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
+					}
+				]
+			}
+		},
+		"next": ["出牌_9"]
+	},
+	"出牌_9": {
+		"action": {
+			"type": "MultiSwipe",
+			"param": {
+				"swipes": [
+					{
+						"starting": 0,
+						"begin": [936, 616, 47, 103],
+						"end": [936, 616, 47, 103],
+						"duration": 50
+					},
+					{
+						"starting": 250,
 						"begin": [1040, 600, 80, 120],
-						"end": [333, 324, 623, 141]
+						"end": [333, 324, 623, 141],
+						"duration": 200
+					},
+					{
+						"starting": 500,
+						"begin": [555, 4, 159, 80],
+						"end": [555, 4, 159, 80],
+						"duration": 50
 					}
 				]
 			}
@@ -207,7 +395,7 @@
 			}
 		},
 		"post_wait_freezes": 5000,
-		"next": ["进行攻击"]
+		"next": ["进行攻击", "结束回合"]
 	},
 	"进行攻击": {
 		"recognition": {

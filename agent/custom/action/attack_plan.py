@@ -32,7 +32,7 @@ class GenerateAttackPlan(CustomAction):
         # 按 y 坐标阈值 300 分为我方和敌方
         enemy_texts, player_texts = RecoDetail.split_by_y_threshold(text_with_xy)
 
-        # 处理敌方和我方的怪兽数据和位置
+        # 处理敌方和我方的怪兽数据和位置[936, 616, 47, 103]
         enemy_monsters, enemy_positions = MonsterProcessor.process_monsters(enemy_texts)
         player_monsters, friend_positions = MonsterProcessor.process_monsters(
             player_texts

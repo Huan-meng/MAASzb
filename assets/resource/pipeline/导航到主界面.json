@@ -29,11 +29,12 @@
 			"type": "TemplateMatch",
 			"param": {
 				"template": ["主界面/金币.png", "主界面/水晶.png"],
-				"threshold": 0.95
+				"threshold": 0.9
 			}
 		}
 	},
 	"导航到主界面": {
+		"timeout": 60000,
 		"next": [
 			"[JumpBack]是",
 			"[JumpBack]返回标题画面",

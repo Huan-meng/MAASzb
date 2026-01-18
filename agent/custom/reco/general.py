@@ -185,3 +185,110 @@ class ColorOCRWithFallback(CustomRecognition):
         except Exception as e:
             logger.error(f"ColorOCRWithFallback识别失败: {e}")
             return None
+
+
+@AgentServer.custom_recognition("ColorFilterReco")
+class ColorFilterReco(CustomRecognition):
+    """
+    通用颜色过滤模板，可根据参数进行颜色过滤后执行指定的识别操作。
+
+    参数格式:
+    {
+        "target_color": [R, G, B],
+        "tolerance": int,
+        "recognition": string,
+        "invert_mask": bool,
+        "fallback": bool
+    }
+
+    字段说明:
+    - target_color: 目标颜色RGB值，默认 [255, 255, 255] (白色)
+    - tolerance: 颜色容差，默认55
+    - recognition: 要运行的识别节点名称
+    - invert_mask: 是否反转颜色掩码，默认false（保留目标颜色）
+    - fallback: 失败后是否fallback到原始图像识别，默认true
+
+    工作流程:
+    1. 根据参数创建颜色过滤掩码
+    2. 可选地反转掩码
+    3. 应用掩码处理图像
+    4. 运行指定的识别操作
+    5. 如果失败且启用了fallback，使用原始图像再次尝试
+    6. 返回任意一种成功的结果
+    """
+
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> Union[CustomRecognition.AnalyzeResult, Optional[RectType]]:
+        try:
+            params = json.loads(argv.custom_recognition_param)
+
+            # 获取参数
+            target_color = params.get("target_color", [255, 255, 255])
+            tolerance = params.get("tolerance", 55)
+            recognition_node = params.get("recognition")
+            invert_mask = params.get("invert_mask", False)
+            fallback = params.get("fallback", True)
+
+            if not target_color or len(target_color) != 3:
+                logger.error(f"无效的target_color参数: {target_color}")
+                return None
+
+            if not recognition_node:
+                logger.error("未提供recognition参数")
+                return None
+
+            # 获取图像
+            img = argv.image
+
+            # 创建颜色过滤掩码
+            target_color_array = np.array(target_color)
+            lower_bound = np.maximum(target_color_array - tolerance, 0)
+            upper_bound = np.minimum(target_color_array + tolerance, 255)
+
+            # 创建掩码：保留在目标颜色范围内的像素
+            color_mask = np.all((img >= lower_bound) & (img <= upper_bound), axis=-1)
+
+            # 可选地反转掩码
+            if invert_mask:
+                color_mask = ~color_mask
+
+            # 处理图像：目标颜色变成黑色，其他颜色变成白色
+            processed_img = np.full_like(img, 255, dtype=np.uint8)
+            processed_img[color_mask] = 0
+
+            # 在处理后的图像上运行识别
+            reco_detail = context.run_recognition(recognition_node, processed_img)
+
+            if reco_detail and reco_detail.hit:
+                logger.debug(f"ColorFilterReco: 颜色过滤识别成功")
+                return CustomRecognition.AnalyzeResult(
+                    box=reco_detail.box,
+                    detail={
+                        "method": "color_filter",
+                        "invert_mask": invert_mask,
+                        "raw_detail": reco_detail.raw_detail,
+                    },
+                )
+
+            # 如果失败且启用了fallback，使用原始图像再次尝试
+            if fallback:
+                reco_detail = context.run_recognition(recognition_node, img)
+
+                if reco_detail and reco_detail.hit:
+                    logger.debug(f"ColorFilterReco: Fallback识别成功")
+                    return CustomRecognition.AnalyzeResult(
+                        box=reco_detail.box,
+                        detail={
+                            "method": "fallback",
+                            "raw_detail": reco_detail.raw_detail,
+                        },
+                    )
+            else:
+                return None
+
+        except Exception as e:
+            logger.error(f"ColorFilterReco识别失败: {e}")
+            return None
