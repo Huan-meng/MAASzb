@@ -1,10 +1,8 @@
-# 项目依赖
 # 处理带注释的 JSON 文件
-jsonc
-
+json-with-comments
 # MAA 核心依赖
 maafw
-
-# 其他依赖
+# 数值计算
 numpy
+# 日志记录
 loguru
