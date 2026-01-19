@@ -136,6 +136,11 @@ def install_agent():
     with open(install_path / "interface.json", "w", encoding="utf-8") as f:
         json.dump(interface, f, ensure_ascii=False, indent=4)
 
+    shutil.copy2(
+        working_dir / "requirements.txt",
+        install_path / "requirements.txt",
+    )
+
 if __name__ == "__main__":
     install_deps()
     install_resource()
