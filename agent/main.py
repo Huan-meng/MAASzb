@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # 在运行主程序之前进行部署检查
     if get_main_py_path().parent.parent != "assets":
         print("测试模式,. 不进行部署检查")
-        sys.argv.append("MAA_AGENT_SOCKET")
+        # sys.argv.append("MAA_AGENT_SOCKET")
     elif not deploy():
         print("error: 部署检查失败，程序退出")
         sys.exit(1)

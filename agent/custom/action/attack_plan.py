@@ -145,7 +145,7 @@ class AttackPlanGenerator:
     攻击方案生成器
     """
 
-    ENEMY_LEADER_POSITION = [572,1,136,92]
+    ENEMY_LEADER_POSITION = [578, 57, 121, 49]
 
     @staticmethod
     def generate_attack_plan(
@@ -202,6 +202,7 @@ class AttackPlanGenerator:
                     "starting": j * 500,  # 每个攻击间隔500ms
                     "begin": friend_positions[j],
                     "end": AttackPlanGenerator.ENEMY_LEADER_POSITION,
+                    "duration": 400,
                 }
                 swipes.append(swipe)
                 logger.info(f"生成攻击主战者拖动: 我方怪兽{j+1} -> 对手主战者")
@@ -244,6 +245,7 @@ class AttackPlanGenerator:
                     "starting": len(swipes) * 500,  # 接在上一个攻击之后
                     "begin": friend_positions[j],
                     "end": AttackPlanGenerator.ENEMY_LEADER_POSITION,
+                    "duration": 400,
                 }
                 swipes.append(swipe)
                 logger.info(f"生成攻击主战者拖动: 我方怪兽{j+1} -> 对手主战者")
