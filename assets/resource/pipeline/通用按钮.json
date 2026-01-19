@@ -73,5 +73,31 @@
 			"type": "Click",
 			"param": {}
 		}
+	},
+	"下一页": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "通用/下一页.png",
+				"threshold": 0.8
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
+	},
+	"好的": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "通用/好的.png",
+				"threshold": 0.8
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
 	}
 }

@@ -1,20 +1,26 @@
 import sys
+import os
 
-from maa.agent.agent_server import AgentServer
-from maa.toolkit import Toolkit
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from agent.deploy.deploy import deploy, get_main_py_path
+
 
 def main():
 
     import custom
 
+    from maa.agent.agent_server import AgentServer
+    from maa.toolkit import Toolkit
+
     Toolkit.init_option("./")
 
-    if len(sys.argv) < 2:
-        print("Usage: python main.py <socket_id>")
-        print("socket_id is provided by AgentIdentifier.")
-        sys.exit(1)
-        
     socket_id = sys.argv[-1]
+    print(f"socket_id: {socket_id}")
 
     AgentServer.start_up(socket_id)
     AgentServer.join()
@@ -22,4 +28,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # 在运行主程序之前进行部署检查
+    if get_main_py_path().parent.parent == "assets":
+        print("测试模式,. 不进行部署检查")
+        sys.argv.append("MAA_AGENT_SOCKET")
+    elif not deploy():
+        print("error: 部署检查失败，程序退出")
+        sys.exit(1)
+
+    try:
+        main()
+    except Exception as e:
+        print(f"error: 程序运行错误: {e}")
+        sys.exit(1)

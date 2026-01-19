@@ -126,7 +126,7 @@ class MonsterProcessor:
                     monsters.append([atk, hp])
                     # 构建位置坐标 [x, y, width, height]
                     # 使用平均坐标作为中心点，宽度和高度设为默认值
-                    positions.append([avg_x - 40, avg_y - 30, 80, 60])
+                    positions.append([avg_x - 33, avg_y - 79, 94, 73])
                     logger.info(f"提取怪兽: 攻{atk}/血{hp}，坐标: ({avg_x}, {avg_y})")
                 except ValueError:
                     logger.warning(f"无法转换为数字: {text1}, {text2}")
@@ -229,6 +229,7 @@ class AttackPlanGenerator:
                             "starting": len(swipes) * 500,  # 每个攻击间隔500ms
                             "begin": friend_positions[attacker_idx],
                             "end": enemy_positions[i],
+                            "duration": 400,
                         }
                         swipes.append(swipe)
                         used_monsters.add(attacker_idx)

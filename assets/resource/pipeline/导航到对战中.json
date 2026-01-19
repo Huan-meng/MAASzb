@@ -7,8 +7,23 @@
 			"[JumpBack]点击对战菜单",
 			"[JumpBack]换牌准备",
 			"[JumpBack]识别我方回合",
-			"[JumpBack]识别对手回合"
+			"[JumpBack]识别对手回合",
+			"[JumpBack]下一页",
+			"[JumpBack]好的",
+			"[JumpBack]领取结果"
 		]
+	},
+	"领取结果": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/领取结果.png"
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
 	},
 	"点击对战菜单": {
 		"max_hit": 1,

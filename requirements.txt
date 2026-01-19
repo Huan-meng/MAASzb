@@ -1,0 +1,10 @@
+# 项目依赖
+# 处理带注释的 JSON 文件
+jsonc
+
+# MAA 核心依赖
+maafw
+
+# 其他依赖
+numpy
+loguru
