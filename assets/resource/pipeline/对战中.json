@@ -394,22 +394,26 @@
 				]
 			}
 		},
-		"post_wait_freezes": 5000,
+		"post_wait_freezes": 3000,
 		"next": ["进行攻击", "结束回合"]
 	},
 	"进行攻击": {
+		"on_error": ["攻击错误处理"],
+		"repeat": 5,
 		"recognition": {
 			"type": "And",
 			"param": {
 				"all_of": [
 					{
-						"sub_name": "识别攻击力和生命位置",
+						"sub_name": "生命位置",
 						"recognition": {
-							"type": "TemplateMatch",
+							"type": "ColorMatch",
 							"param": {
-								"template": ["对战/攻击力.png", "对战/生命.png"],
-								"green_mask": true,
-								"threshold": 0.3
+								"roi": [103, 140, 964, 337],
+								"upper": [204, 68, 67],
+								"lower": [98, 35, 37],
+								"count": 700,
+								"connected": true
 							}
 						}
 					},
@@ -417,8 +421,31 @@
 						"recognition": {
 							"type": "OCR",
 							"param": {
-								"roi": "识别攻击力和生命位置",
-								"roi_offset": [10, 10, -20, -20],
+								"roi": "生命位置",
+								"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					},
+					{
+						"sub_name": "攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [94, 123, 199],
+								"lower": [5, 64, 106],
+								"count": 700,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "攻击力位置",
+								"roi_offset": [5, 5, -10, -10],
 								"only_rec": true
 							}
 						}
@@ -430,6 +457,10 @@
 			"type": "Custom",
 			"param": {"custom_action": "GenerateAttackPlan"}
 		},
+		"next": ["结束回合"]
+	},
+	"攻击错误处理": {
+		// 其实只是回避重复路由
 		"next": ["结束回合"]
 	},
 	"结束回合": {
@@ -455,8 +486,8 @@
 		"recognition": {
 			"type": "OCR",
 			"param": {
-				"roi": [700, 0, 100, 100],
-				"expected": "[0-9]*"
+				"roi": [734, 47, 41, 30],
+				"only_rec": true
 			}
 		}
 	},

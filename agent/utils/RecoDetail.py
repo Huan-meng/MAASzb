@@ -55,7 +55,7 @@ class RecoDetail:
         text_with_xy = []
 
         for item in raw_detail:
-            logger.info(f"处理项目内容: {item}")
+            # logger.info(f"处理项目内容: {item}")
 
             # 处理字典类型的情况
             if isinstance(item, dict):
@@ -89,9 +89,9 @@ class RecoDetail:
                                 x = box[0]  # 获取 x 坐标
                                 y = box[1]  # 获取 y 坐标
                                 text_with_xy.append((x, y, all_item["text"]))
-                                logger.info(
-                                    f"找到带坐标的文本: {all_item['text']}，x={x}，y={y}"
-                                )
+                                # logger.info(
+                                #     f"找到带坐标的文本: {all_item['text']}，x={x}，y={y}"
+                                # )
 
     @staticmethod
     def _extract_from_object_item(
@@ -114,7 +114,7 @@ class RecoDetail:
                             y = box[1]  # 获取 y 坐标
                             text = getattr(all_item, "text", "")
                             text_with_xy.append((x, y, text))
-                            logger.info(f"找到带坐标的文本: {text}，x={x}，y={y}")
+                            # logger.info(f"找到带坐标的文本: {text}，x={x}，y={y}")
                     # 兼容字典类型的 all_item
                     elif (
                         isinstance(all_item, dict)
@@ -126,32 +126,6 @@ class RecoDetail:
                             x = box[0]  # 获取 x 坐标
                             y = box[1]  # 获取 y 坐标
                             text_with_xy.append((x, y, all_item["text"]))
-                            logger.info(
-                                f"找到带坐标的文本 (字典): {all_item['text']}，x={x}，y={y}"
-                            )
-
-    @staticmethod
-    def split_by_y_threshold(
-        text_with_xy: List[Tuple[int, int, str]],
-    ) -> Tuple[List[Tuple[int, int, str]], List[Tuple[int, int, str]]]:
-        """
-        按 y 坐标阈值 300 分为我方（y较高）和敌方（y较低）两个数组
-        """
-        if not text_with_xy:
-            return [], []
-
-        threshold_y = 300
-        logger.info(f"判断敌我阈值 y 坐标: {threshold_y}")
-
-        enemy_texts = []  # 敌方（y较低）
-        player_texts = []  # 我方（y较高）
-
-        for x, y, text in text_with_xy:
-            if y < threshold_y:
-                enemy_texts.append((x, y, text))
-                logger.info(f"添加到敌方: {text} (x={x}, y={y})")
-            else:
-                player_texts.append((x, y, text))
-                logger.info(f"添加到我方: {text} (x={x}, y={y})")
-
-        return enemy_texts, player_texts
+                            # logger.info(
+                            #     f"找到带坐标的文本 (字典): {all_item['text']}，x={x}，y={y}"
+                            # )

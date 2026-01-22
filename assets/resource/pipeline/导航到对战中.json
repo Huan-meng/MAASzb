@@ -10,8 +10,21 @@
 			"[JumpBack]识别对手回合",
 			"[JumpBack]下一页",
 			"[JumpBack]好的",
-			"[JumpBack]领取结果"
+			"[JumpBack]领取结果",
+			"[JumpBack]阶位提升"
 		]
+	},
+	"阶位提升": {
+		"recognition": {
+			"type": "TemplateMatch",
+			"param": {
+				"template": "对战/阶位提升.png"
+			}
+		},
+		"action": {
+			"type": "Click",
+			"param": {}
+		}
 	},
 	"领取结果": {
 		"recognition": {

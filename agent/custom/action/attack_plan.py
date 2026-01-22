@@ -6,11 +6,38 @@ from utils import logger
 from typing import List, Tuple, Dict, Any
 import json
 
+
 @AgentServer.custom_action("GenerateAttackPlan")
 class GenerateAttackPlan(CustomAction):
     """
     根据识别详情生成攻击方案，使用 MonsterBattleSolver 求解最优策略，并生成拖动方案。
     """
+
+    @staticmethod
+    def split_by_y_threshold(
+        text_with_xy: List[Tuple[int, int, str]],
+    ) -> Tuple[List[Tuple[int, int, str]], List[Tuple[int, int, str]]]:
+        """
+        按 y 坐标阈值 300 分为我方（y较高）和敌方（y较低）两个数组
+        """
+        if not text_with_xy:
+            return [], []
+
+        threshold_y = 300
+        logger.info(f"判断敌我阈值 y 坐标: {threshold_y}")
+
+        enemy_texts = []  # 敌方（y较低）
+        player_texts = []  # 我方（y较高）
+
+        for x, y, text in text_with_xy:
+            if y < threshold_y:
+                enemy_texts.append((x, y, text))
+                # logger.info(f"添加到敌方: {text} (x={x}, y={y})")
+            else:
+                player_texts.append((x, y, text))
+                # logger.info(f"添加到我方: {text} (x={x}, y={y})")
+
+        return enemy_texts, player_texts
 
     def run(
         self,
@@ -20,7 +47,7 @@ class GenerateAttackPlan(CustomAction):
 
         # 获取原始识别详情
         raw_detail = getattr(argv.reco_detail, "raw_detail", [])
-        logger.info(f"原始识别详情长度: {len(raw_detail)}")
+        # logger.info(f"原始识别详情长度: {len(raw_detail)}")
 
         # 提取文本和对应的 x、y 坐标
         text_with_xy = RecoDetail.extract_text_with_coordinates(raw_detail)
@@ -30,7 +57,9 @@ class GenerateAttackPlan(CustomAction):
             return CustomAction.RunResult(success=False)
 
         # 按 y 坐标阈值 300 分为我方和敌方
-        enemy_texts, player_texts = RecoDetail.split_by_y_threshold(text_with_xy)
+        enemy_texts, player_texts = GenerateAttackPlan.split_by_y_threshold(
+            text_with_xy
+        )
 
         # 处理敌方和我方的怪兽数据和位置[936, 616, 47, 103]
         enemy_monsters, enemy_positions = MonsterProcessor.process_monsters(enemy_texts)
@@ -68,7 +97,7 @@ class GenerateAttackPlan(CustomAction):
                 result = context.run_action(
                     "随从交换", pipeline_override=pipeline_override
                 )
-                logger.info(f"MultiSwipe 动作执行结果: {result}")
+                # logger.info(f"MultiSwipe 动作执行结果: {result}")
             except Exception as e:
                 logger.error(f"执行 MultiSwipe 动作时出错: {e}")
                 return CustomAction.RunResult(success=False)
@@ -108,28 +137,36 @@ class MonsterProcessor:
         """
         monsters = []
         positions = []
-        # 每两个文本为一对（攻击力和生命值）
-        for i in range(0, len(texts), 2):
-            if i + 1 < len(texts):
-                # 获取两个文本的坐标
-                x1, y1, text1 = texts[i]
-                x2, y2, text2 = texts[i + 1]
+        
+        # 检查文本数量是否为偶数（每个怪兽对应一个生命值和一个攻击力）
+        if len(texts) % 2 != 0:
+            logger.warning(f"文本数量不为偶数: {len(texts)}")
+            return monsters, positions
+        
+        # 前半部分为生命值，后半部分为攻击力
+        n = len(texts) // 2
+        
+        for j in range(n):
+            # 获取生命值文本和坐标
+            hp_x, hp_y, hp_text = texts[j]
+            # 获取攻击力文本和坐标
+            atk_x, atk_y, atk_text = texts[j + n]
 
-                # 计算平均坐标
-                avg_x = (x1 + x2) // 2
-                avg_y = (y1 + y2) // 2
+            # 计算平均坐标
+            avg_x = (hp_x + atk_x) // 2
+            avg_y = (hp_y + atk_y) // 2
 
-                # 尝试转换为数字
-                try:
-                    atk = int(text1)
-                    hp = int(text2)
-                    monsters.append([atk, hp])
-                    # 构建位置坐标 [x, y, width, height]
-                    # 使用平均坐标作为中心点，宽度和高度设为默认值
-                    positions.append([avg_x - 33, avg_y - 79, 94, 73])
-                    logger.info(f"提取怪兽: 攻{atk}/血{hp}，坐标: ({avg_x}, {avg_y})")
-                except ValueError:
-                    logger.warning(f"无法转换为数字: {text1}, {text2}")
+            # 尝试转换为数字
+            try:
+                atk = int(atk_text)
+                hp = int(hp_text)
+                monsters.append([atk, hp])
+                # 构建位置坐标 [x, y, width, height]
+                # 使用平均坐标作为中心点，宽度和高度设为默认值
+                positions.append([avg_x - 33, avg_y - 79, 94, 73])
+                logger.info(f"提取怪兽: 攻{atk}/血{hp}，坐标: ({avg_x}, {avg_y})")
+            except ValueError:
+                logger.warning(f"无法转换为数字: {atk_text}, {hp_text}")
         return monsters, positions
 
     @staticmethod
@@ -172,12 +209,12 @@ class AttackPlanGenerator:
         total_friend_atk = MonsterProcessor.calculate_total_attack(player_monsters)
         logger.info(f"我方总攻击力: {total_friend_atk}")
 
-        # 检查我方总攻击力是否大于等于敌方主战者生命值
-        if enemy_leader_hp > 0 and total_friend_atk >= enemy_leader_hp:
-            logger.info("我方总攻击力大于等于敌方主战者生命值，直接攻击主战者")
-            return AttackPlanGenerator._generate_attack_leader_swipes(
-                player_monsters, friend_positions
-            )
+        # # 检查我方总攻击力是否大于等于敌方主战者生命值
+        # if enemy_leader_hp > 0 and total_friend_atk >= enemy_leader_hp:
+        #     logger.info("我方总攻击力大于等于敌方主战者生命值，直接攻击主战者")
+        #     return AttackPlanGenerator._generate_attack_leader_swipes(
+        #         player_monsters, friend_positions
+        #     )
 
         # 使用 MonsterBattleSolver 求解最优攻击策略
         solver = MonsterBattleSolver(enemy_monsters, player_monsters)
@@ -202,7 +239,8 @@ class AttackPlanGenerator:
                     "starting": j * 500,  # 每个攻击间隔500ms
                     "begin": friend_positions[j],
                     "end": AttackPlanGenerator.ENEMY_LEADER_POSITION,
-                    "duration": 400,
+                    "duration": 300,
+                    "end_hold": 100,
                 }
                 swipes.append(swipe)
                 logger.info(f"生成攻击主战者拖动: 我方怪兽{j+1} -> 对手主战者")
@@ -230,7 +268,8 @@ class AttackPlanGenerator:
                             "starting": len(swipes) * 500,  # 每个攻击间隔500ms
                             "begin": friend_positions[attacker_idx],
                             "end": enemy_positions[i],
-                            "duration": 400,
+                            "duration": 300,
+                            "end_hold": 100,
                         }
                         swipes.append(swipe)
                         used_monsters.add(attacker_idx)
@@ -245,7 +284,8 @@ class AttackPlanGenerator:
                     "starting": len(swipes) * 500,  # 接在上一个攻击之后
                     "begin": friend_positions[j],
                     "end": AttackPlanGenerator.ENEMY_LEADER_POSITION,
-                    "duration": 400,
+                    "duration": 300,
+                    "end_hold": 100,
                 }
                 swipes.append(swipe)
                 logger.info(f"生成攻击主战者拖动: 我方怪兽{j+1} -> 对手主战者")
