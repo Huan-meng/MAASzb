@@ -32,10 +32,8 @@ class GenerateAttackPlan(CustomAction):
         for x, y, text in text_with_xy:
             if y < threshold_y:
                 enemy_texts.append((x, y, text))
-                # logger.info(f"添加到敌方: {text} (x={x}, y={y})")
             else:
                 player_texts.append((x, y, text))
-                # logger.info(f"添加到我方: {text} (x={x}, y={y})")
 
         return enemy_texts, player_texts
 
@@ -47,10 +45,11 @@ class GenerateAttackPlan(CustomAction):
 
         # 获取原始识别详情
         raw_detail = getattr(argv.reco_detail, "raw_detail", [])
-        # logger.info(f"原始识别详情长度: {len(raw_detail)}")
 
         # 提取文本和对应的 x、y 坐标
-        text_with_xy = RecoDetail.extract_text_with_coordinates(raw_detail)
+        text_with_xy = RecoDetail.extract_text_with_coordinates(
+            raw_detail["best"]["detail"]
+        )
 
         if not text_with_xy:
             logger.info("未找到文本")
@@ -90,14 +89,14 @@ class GenerateAttackPlan(CustomAction):
             logger.info(f"生成的拖动方案: {swipes}")
             # 使用 context 执行 MultiSwipe 动作
             try:
-                # 构建 pipeline_override，覆盖对战中.json 中的随从交换节点
+                # 构建 pipeline_override，覆盖对战中.json 中的多指滑动泛用型节点
                 pipeline_override = {
-                    "随从交换": {"action": {"param": {"swipes": swipes}}}
+                    "多指滑动泛用型": {"action": {"param": {"swipes": swipes}}}
                 }
                 result = context.run_action(
-                    "随从交换", pipeline_override=pipeline_override
+                    "多指滑动泛用型", pipeline_override=pipeline_override
                 )
-                # logger.info(f"MultiSwipe 动作执行结果: {result}")
+
             except Exception as e:
                 logger.error(f"执行 MultiSwipe 动作时出错: {e}")
                 return CustomAction.RunResult(success=False)
@@ -137,24 +136,85 @@ class MonsterProcessor:
         """
         monsters = []
         positions = []
-        
-        # 检查文本数量是否为偶数（每个怪兽对应一个生命值和一个攻击力）
-        if len(texts) % 2 != 0:
-            logger.warning(f"文本数量不为偶数: {len(texts)}")
+
+        # 清洗数组，过滤掉非数字的元素
+        cleaned_texts = []
+        for item in texts:
+            x, y, text = item
+            if text.isdigit():
+                cleaned_texts.append(item)
+            else:
+                logger.warning(f"过滤非数字元素: {text}")
+
+        if not cleaned_texts:
             return monsters, positions
-        
-        # 前半部分为生命值，后半部分为攻击力
-        n = len(texts) // 2
-        
-        for j in range(n):
-            # 获取生命值文本和坐标
-            hp_x, hp_y, hp_text = texts[j]
-            # 获取攻击力文本和坐标
-            atk_x, atk_y, atk_text = texts[j + n]
+
+        # 按 x 坐标排序
+        sorted_texts = sorted(cleaned_texts, key=lambda item: item[0])
+        logger.info(f"按 x 坐标排序后的文本: {sorted_texts}")
+
+        # 合并x坐标距离小于15的数字
+        merged_texts = []
+        i = 0
+        while i < len(sorted_texts):
+            if i + 1 < len(sorted_texts):
+                x1, y1, text1 = sorted_texts[i]
+                x2, y2, text2 = sorted_texts[i + 1]
+                if x2 - x1 < 15:
+                    # 合并两个数字，计算平均坐标
+                    merged_x = (x1 + x2) // 2
+                    merged_y = (y1 + y2) // 2
+                    merged_text = text1 + text2
+                    merged_texts.append((merged_x, merged_y, merged_text))
+                    logger.info(
+                        f"合并数字: {text1} + {text2} = {merged_text}，坐标: ({merged_x}, {merged_y})"
+                    )
+                    i += 2
+                else:
+                    merged_texts.append(sorted_texts[i])
+                    i += 1
+            else:
+                merged_texts.append(sorted_texts[i])
+                i += 1
+        logger.info(f"合并后的文本: {merged_texts}")
+
+        # 按 x 坐标临近程度聚类
+        clusters = []
+        current_cluster = []
+        min_threshold_x = 80  # x 坐标最小阈值
+        max_threshold_x = 140  # x 坐标最大阈值
+        logger.info(f"x 坐标阈值区间: {min_threshold_x} - {max_threshold_x}")
+
+        for item in merged_texts:
+            if not current_cluster:
+                current_cluster.append(item)
+            else:
+                last_x = current_cluster[-1][0]
+                current_x = item[0]
+                if min_threshold_x <= current_x - last_x <= max_threshold_x:
+                    current_cluster.append(item)
+                else:
+                    clusters.append(current_cluster)
+                    current_cluster = [item]
+        if current_cluster:
+            clusters.append(current_cluster)
+
+        # 过滤出包含恰好两个元素的集群（生命值和攻击力）
+        valid_clusters = [cluster for cluster in clusters if len(cluster) == 2]
+        logger.info(f"有效怪兽集群数量: {len(valid_clusters)}")
+
+        if not valid_clusters:
+            logger.warning("没有找到有效的怪兽集群")
+            return monsters, positions
+
+        # 处理每个有效集群
+        for cluster in valid_clusters:
+            atk_x, atk_y, atk_text = cluster[0]
+            hp_x, hp_y, hp_text = cluster[1]
 
             # 计算平均坐标
-            avg_x = (hp_x + atk_x) // 2
-            avg_y = (hp_y + atk_y) // 2
+            avg_x = (atk_x + hp_x) // 2
+            avg_y = (atk_y + hp_y) // 2
 
             # 尝试转换为数字
             try:
@@ -167,6 +227,7 @@ class MonsterProcessor:
                 logger.info(f"提取怪兽: 攻{atk}/血{hp}，坐标: ({avg_x}, {avg_y})")
             except ValueError:
                 logger.warning(f"无法转换为数字: {atk_text}, {hp_text}")
+
         return monsters, positions
 
     @staticmethod
@@ -451,3 +512,135 @@ class MonsterBattleSolver:
         elif killed1 == killed2 and dead1 < dead2:
             return True
         return False
+
+
+@AgentServer.custom_action("GenerateEvolutionPlan")
+class GenerateEvolutionPlan(CustomAction):
+    """
+    生成进化和超进化方案，从指定位置拖动到我方怪兽位置。
+    """
+
+    @staticmethod
+    def split_by_y_threshold(
+        text_with_xy: List[Tuple[int, int, str]],
+    ) -> Tuple[List[Tuple[int, int, str]], List[Tuple[int, int, str]]]:
+        """
+        按 y 坐标阈值 300 分为我方（y较高）和敌方（y较低）两个数组
+        """
+        if not text_with_xy:
+            return [], []
+
+        threshold_y = 300
+        logger.info(f"判断敌我阈值 y 坐标: {threshold_y}")
+
+        enemy_texts = []  # 敌方（y较低）
+        player_texts = []  # 我方（y较高）
+
+        for x, y, text in text_with_xy:
+            if y < threshold_y:
+                enemy_texts.append((x, y, text))
+            else:
+                player_texts.append((x, y, text))
+
+        return enemy_texts, player_texts
+
+    def run(
+        self,
+        context: Context,
+        argv: CustomAction.RunArg,
+    ) -> CustomAction.RunResult:
+
+        # 获取原始识别详情
+        raw_detail = getattr(argv.reco_detail, "raw_detail", [])
+
+        # 提取文本和对应的 x、y 坐标
+        text_with_xy = RecoDetail.extract_text_with_coordinates(
+            raw_detail["best"]["detail"]
+        )
+
+        if not text_with_xy:
+            logger.info("未找到文本")
+            return CustomAction.RunResult(success=False)
+
+        # 按 y 坐标阈值 300 分为我方和敌方
+        enemy_texts, player_texts = GenerateEvolutionPlan.split_by_y_threshold(
+            text_with_xy
+        )
+
+        # 处理我方的怪兽数据和位置
+        _, friend_positions = MonsterProcessor.process_monsters(player_texts)
+
+        # 检查是否有有效的怪兽数据
+        if not friend_positions:
+            logger.info("无法提取有效的我方怪兽数据")
+            return CustomAction.RunResult(success=False)
+
+        # 生成进化和超进化方案
+        swipes = EvolutionPlanGenerator.generate_evolution_plan(friend_positions)
+
+        # 如果有拖动操作，执行 MultiSwipe 动作
+        if swipes:
+            logger.info(f"生成的进化和超进化拖动方案: {swipes}")
+            # 使用 context 执行 MultiSwipe 动作
+            try:
+                # 构建 pipeline_override，覆盖对战中.json 中的多指滑动泛用型节点
+                pipeline_override = {
+                    "多指滑动泛用型": {"action": {"param": {"swipes": swipes}}}
+                }
+                result = context.run_action(
+                    "多指滑动泛用型", pipeline_override=pipeline_override
+                )
+            except Exception as e:
+                logger.error(f"执行 MultiSwipe 动作时出错: {e}")
+                return CustomAction.RunResult(success=False)
+        else:
+            logger.info("没有生成进化和超进化拖动方案")
+
+        return CustomAction.RunResult(success=True)
+
+
+class EvolutionPlanGenerator:
+    """
+    进化和超进化方案生成器
+    """
+
+    EVOLUTION_POSITION = [540, 492, 44, 54]
+    SUPER_EVOLUTION_POSITION = [700, 496, 36, 42]
+
+    @staticmethod
+    def generate_evolution_plan(
+        friend_positions: List[List[int]],
+    ) -> List[Dict[str, Any]]:
+        """
+        生成进化和超进化方案，依次从进化和超进化位置拖动到我方每个怪兽位置
+        """
+        swipes = []
+
+        if not friend_positions:
+            return swipes
+
+        # 生成从进化位置到每个我方怪兽的拖动
+        for i, position in enumerate(friend_positions):
+            # 进化拖动
+            evolution_swipe = {
+                "starting": i * 1000,  # 每个进化间隔1000ms（进化+超进化）
+                "begin": EvolutionPlanGenerator.EVOLUTION_POSITION,
+                "end": position,
+                "duration": 300,
+                "end_hold": 100,
+            }
+            swipes.append(evolution_swipe)
+            logger.info(f"生成进化拖动: 进化位置 -> 我方怪兽{i+1}")
+
+            # 超进化拖动
+            super_evolution_swipe = {
+                "starting": i * 1000 + 500,  # 超进化在进化后500ms执行
+                "begin": EvolutionPlanGenerator.SUPER_EVOLUTION_POSITION,
+                "end": position,
+                "duration": 300,
+                "end_hold": 100,
+            }
+            swipes.append(super_evolution_swipe)
+            logger.info(f"生成超进化拖动: 超进化位置 -> 我方怪兽{i+1}")
+
+        return swipes

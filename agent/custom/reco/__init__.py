@@ -5,4 +5,5 @@ __all__ = [
     "ColorOCR",
     "ColorOCRWithFallback",
     "ColorFilterReco",
+    "MultiRecognition",
 ]

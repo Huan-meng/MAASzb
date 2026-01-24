@@ -59,10 +59,14 @@ class RecoDetail:
 
             # 处理字典类型的情况
             if isinstance(item, dict):
-                RecoDetail._extract_from_dict_item(item, text_with_xy)
+                # 检查是否为 OCR 算法
+                if item.get("algorithm") == "OCR":
+                    RecoDetail._extract_from_dict_item(item, text_with_xy)
             # 处理对象类型的情况
             elif hasattr(item, "detail"):
-                RecoDetail._extract_from_object_item(item, text_with_xy)
+                # 检查是否为 OCR 算法
+                if getattr(item, "algorithm", None) == "OCR":
+                    RecoDetail._extract_from_object_item(item, text_with_xy)
 
         return text_with_xy
 

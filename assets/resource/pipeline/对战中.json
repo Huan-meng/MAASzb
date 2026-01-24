@@ -284,184 +284,73 @@
 				]
 			}
 		},
-		"next": ["进化"]
+		"post_wait_freezes": 3000,
+		"next": ["进化", "结束回合"]
 	},
 	"进化": {
-		"action": {
-			"type": "MultiSwipe",
+		"recognition": {
+			"type": "Custom",
 			"param": {
-				"swipes": [
-					{
-						"starting": 0,
-						"begin": [540, 492, 44, 54],
-						"end": [286, 360, 100, 100]
+				"custom_recognition": "MultiRecognition",
+				"custom_recognition_param": {
+					"nodes": [
+						"红色生命值识别",
+						"白色生命值识别",
+						"绿色生命值识别",
+						"黄色攻击力识别",
+						"白色攻击力识别",
+						"绿色攻击力识别"
+					],
+					"logic": {
+						"type": "OR"
 					},
-					{
-						"starting": 500,
-						"begin": [540, 492, 44, 54],
-						"end": [372, 340, 100, 100]
-					},
-					{
-						"starting": 1000,
-						"begin": [540, 492, 44, 54],
-						"end": [435, 360, 100, 100]
-					},
-					{
-						"starting": 1500,
-						"begin": [540, 492, 44, 54],
-						"end": [515, 360, 100, 100]
-					},
-					{
-						"starting": 2000,
-						"begin": [540, 492, 44, 54],
-						"end": [591, 360, 100, 100]
-					},
-					{
-						"starting": 2500,
-						"begin": [540, 492, 44, 54],
-						"end": [670, 360, 100, 100]
-					},
-					{
-						"starting": 3000,
-						"begin": [540, 492, 44, 54],
-						"end": [742, 360, 100, 100]
-					},
-					{
-						"starting": 3500,
-						"begin": [540, 492, 44, 54],
-						"end": [820, 360, 100, 100]
-					},
-					{
-						"starting": 4000,
-						"begin": [540, 492, 44, 54],
-						"end": [893, 360, 100, 100]
-					}
-				]
+					"return": "$0"
+				}
 			}
 		},
-		"next": ["超进化"]
-	},
-	"超进化": {
 		"action": {
-			"type": "MultiSwipe",
+			"type": "Custom",
 			"param": {
-				"swipes": [
-					{
-						"starting": 0,
-						"begin": [700, 496, 36, 42],
-						"end": [286, 360, 100, 100]
-					},
-					{
-						"starting": 500,
-						"begin": [700, 496, 36, 42],
-						"end": [372, 340, 100, 100]
-					},
-					{
-						"starting": 1000,
-						"begin": [700, 496, 36, 42],
-						"end": [435, 360, 100, 100]
-					},
-					{
-						"starting": 1500,
-						"begin": [700, 496, 36, 42],
-						"end": [515, 360, 100, 100]
-					},
-					{
-						"starting": 2000,
-						"begin": [700, 496, 36, 42],
-						"end": [591, 360, 100, 100]
-					},
-					{
-						"starting": 2500,
-						"begin": [700, 496, 36, 42],
-						"end": [670, 360, 100, 100]
-					},
-					{
-						"starting": 3000,
-						"begin": [700, 496, 36, 42],
-						"end": [742, 360, 100, 100]
-					},
-					{
-						"starting": 3500,
-						"begin": [700, 496, 36, 42],
-						"end": [820, 360, 100, 100]
-					},
-					{
-						"starting": 4000,
-						"begin": [700, 496, 36, 42],
-						"end": [893, 360, 100, 100]
-					}
-				]
+				"custom_action": "GenerateEvolutionPlan"
 			}
 		},
 		"post_wait_freezes": 3000,
-		"next": ["进行攻击", "结束回合"]
+		"next": ["进行攻击"],
+		"on_error": ["结束回合"]
 	},
 	"进行攻击": {
-		"on_error": ["攻击错误处理"],
 		"repeat": 5,
 		"recognition": {
-			"type": "And",
+			"type": "Custom",
 			"param": {
-				"all_of": [
-					{
-						"sub_name": "生命位置",
-						"recognition": {
-							"type": "ColorMatch",
-							"param": {
-								"roi": [103, 140, 964, 337],
-								"upper": [204, 68, 67],
-								"lower": [98, 35, 37],
-								"count": 700,
-								"connected": true
-							}
-						}
+				"custom_recognition": "MultiRecognition",
+				"custom_recognition_param": {
+					"nodes": [
+						"红色生命值识别",
+						"白色生命值识别",
+						"绿色生命值识别",
+						// "灰色生命值识别", // 这个好像没用
+						"黄色攻击力识别",
+						"白色攻击力识别",
+						"绿色攻击力识别"
+					],
+					"logic": {
+						"type": "OR"
 					},
-					{
-						"recognition": {
-							"type": "OCR",
-							"param": {
-								"roi": "生命位置",
-								"roi_offset": [5, 5, -10, -10],
-								"only_rec": true
-							}
-						}
-					},
-					{
-						"sub_name": "攻击力位置",
-						"recognition": {
-							"type": "ColorMatch",
-							"param": {
-								"roi": [103, 140, 964, 337],
-								"upper": [94, 123, 199],
-								"lower": [5, 64, 106],
-								"count": 700,
-								"connected": true
-							}
-						}
-					},
-					{
-						"recognition": {
-							"type": "OCR",
-							"param": {
-								"roi": "攻击力位置",
-								"roi_offset": [5, 5, -10, -10],
-								"only_rec": true
-							}
-						}
-					}
-				]
+					"return": "$0"
+				}
 			}
 		},
 		"action": {
 			"type": "Custom",
 			"param": {"custom_action": "GenerateAttackPlan"}
 		},
-		"next": ["结束回合"]
+		"on_error": ["攻击错误处理"],
+		"next": ["结束回合", "识别对手回合"]
 	},
 	"攻击错误处理": {
 		// 其实只是回避重复路由
-		"next": ["结束回合"]
+		"next": ["结束回合", "识别对手回合"]
 	},
 	"结束回合": {
 		"recognition": {
@@ -474,7 +363,7 @@
 			"type": "Click"
 		}
 	},
-	"随从交换": {
+	"多指滑动泛用型": {
 		"action": {
 			"type": "MultiSwipe",
 			"param": {
@@ -496,6 +385,327 @@
 			"type": "TemplateMatch",
 			"param": {
 				"template": "对战/对手回合.png"
+			}
+		}
+	},
+	"红色生命值识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [204, 68, 67],
+								"lower": [98, 35, 37],
+								"count": 400,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "红色生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "生命位置",
+								"upper": [211, 158, 158],
+								"lower": [167, 89, 89],
+								"count": 200,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "红色生命位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"白色生命值识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [204, 68, 67],
+								"lower": [98, 35, 37],
+								"count": 400,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "白色生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "生命位置",
+
+								"upper": [255, 255, 255],
+								"lower": [177, 123, 119],
+								"count": 100,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "白色生命位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"绿色生命值识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [204, 68, 67],
+								"lower": [98, 35, 37],
+								"count": 400,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "绿色生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "生命位置",
+
+								"upper": [106, 235, 26],
+								"lower": [98, 107, 11],
+								"count": 100,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "绿色生命位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"灰色生命值识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [204, 68, 67],
+								"lower": [98, 35, 37],
+								"count": 400,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "灰色生命位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "生命位置",
+
+								"upper": [151, 151, 110],
+								"lower": [93, 42, 36],
+								"count": 100,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "灰色生命位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"黄色攻击力识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [94, 123, 199],
+								"lower": [5, 64, 106],
+								"count": 600,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "黄色攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "攻击力位置",
+
+								"upper": [248, 201, 113],
+								"lower": [79, 84, 94],
+								"count": 100,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "黄色攻击力位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"白色攻击力识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [117, 145, 199],
+								"lower": [5, 64, 106],
+								"count": 600,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "白色攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "攻击力位置",
+
+								"upper": [255, 255, 255],
+								"lower": [150, 166, 182],
+								"count": 100,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "白色攻击力位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"绿色攻击力识别": {
+		"recognition": {
+			"type": "And",
+			"param": {
+				"all_of": [
+					{
+						"sub_name": "攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": [103, 140, 964, 337],
+								"upper": [94, 135, 199],
+								"lower": [5, 64, 72],
+								"count": 600,
+								"connected": true
+							}
+						}
+					},
+					{
+						"sub_name": "绿色攻击力位置",
+						"recognition": {
+							"type": "ColorMatch",
+							"param": {
+								"roi": "攻击力位置",
+
+								"upper": [163, 255, 98],
+								"lower": [58, 116, 43],
+								"count": 100,
+								"connected": true
+							}
+						}
+					},
+					{
+						"recognition": {
+							"type": "OCR",
+							"param": {
+								"roi": "绿色攻击力位置",
+								//"roi_offset": [5, 5, -10, -10],
+								"only_rec": true
+							}
+						}
+					}
+				]
 			}
 		}
 	}
